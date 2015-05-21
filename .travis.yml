@@ -1,2 +1,4 @@
 language: c
-script: make
+script: make new-debug new-release
+notifications:
+  email: false
