@@ -1,5 +1,5 @@
 language: c
-script: make new-debug new-release
+script: make new-debug new-release test
 
 # A nudge to avoid checking in broken builds.
 notifications:

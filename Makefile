@@ -12,3 +12,10 @@ new-debug:
 	@$(MAKE) -C src $@
 clean:
 	@$(MAKE) -C src $@
+
+test: checktest statstest
+
+checktest: release
+	nosetests -vsa 'check'
+statstest: release
+	nosetests -vsa 'stats'
