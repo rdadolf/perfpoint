@@ -1,5 +1,17 @@
 language: c
-script: make new-debug new-release test
+before_install:
+  - sudo apt-get update
+install:
+  - sudo apt-get install python2.7
+  - sudo apt-get install python-pip
+  - pip install nose
+  - pip install numpy
+script:
+  # Allow all hardware counter events
+  - sudo sysctl kernel.perf_event_paranoid=-1
+  - make new-debug
+  - make new-release
+  - make test
 
 # A nudge to avoid checking in broken builds.
 notifications:
