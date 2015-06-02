@@ -4,8 +4,8 @@ before_install:
 install:
   - sudo apt-get install python2.7
   - sudo apt-get install python-pip
-  - pip install nose
-  - pip install numpy
+  - sudo pip install nose
+  - sudo pip install numpy
 script:
   # Allow all hardware counter events
   - sudo sysctl kernel.perf_event_paranoid=-1
