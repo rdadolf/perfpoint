@@ -1,4 +1,4 @@
-.PHONY: release new-release debug new-debug clean
+.PHONY: release new-release debug new-debug test_programs test checktest statstest clean
 
 default: release
 
@@ -13,9 +13,12 @@ new-debug:
 clean:
 	@$(MAKE) -C src $@
 
+test_programs:
+	@$(MAKE) -C test/test_programs
+
 test: checktest statstest
 
-checktest: release
+checktest: release test_programs
 	nosetests -vsa 'check'
-statstest: release
+statstest: release test_programs
 	nosetests -vsa 'stats'

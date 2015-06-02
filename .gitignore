@@ -1,0 +1,6 @@
+*.pyc
+test/test_programs/compute
+test/test_programs/javacompute.class
+test/test_programs/javacompute.jar
+test/test_programs/ompcompute
+test/test_programs/short

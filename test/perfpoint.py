@@ -61,6 +61,7 @@ class PerfPoint:
 
   def run(self):
     with TestDir() as tmpd:
+      os.chdir(tmpd)
       #print '['+tmpd+'] Running "'+' '.join(self._cmd)+'"'
       proc = sub.Popen(self._cmd, stdout=sub.PIPE, stderr=sub.PIPE)
       (self._stdout,self._stderr) = proc.communicate()
