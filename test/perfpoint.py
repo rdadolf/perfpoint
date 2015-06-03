@@ -90,7 +90,7 @@ class Alignment:
   def add_counter(self, event_type, event_config, event_name):
     self._counters.append( (event_type, event_config, event_name) )
 
-  def run(self, scaled=True):
+  def run(self, scaled=True, smooth=True):
     with TestDir() as tmpd:
       os.chdir(tmpd)
       logfiles=[]
@@ -106,10 +106,13 @@ class Alignment:
         assert pp._run()==0, 'Failed perfpoint run for counter '+str((evtype,evconf,evname))
         assert os.path.isfile(logfile), 'No perfpoint output for counter '+str((evtype,evconf,evname))
       # Now align it
+      traces = align.load_traces(logfiles)
+      if smooth:
+        traces = map(align.correct_for_oversampling, traces)
       if scaled:
-        data = align.align_scaled(align.load_traces(logfiles), self._ipoint_interval)
+        data = align.align_scaled(traces, self._ipoint_interval)
       else:
-        data = align.align_truncated(load_traces(logfiles), self._ipoint_interval)
+        data = align.align_truncated(traces, self._ipoint_interval)
       return data
 
 # Decorator that turns the first line of a docstring into the test case name

@@ -52,6 +52,24 @@ def test_ragged_scaled():
   assert new.shape==(99,3), 'align_scaled didnt scale correctly'
   assert np.all(new[:,1]==new[:,2]), 'align_scaled didnt align the data'
 
+@attr('check','align')
+@docstring_name
+def test_smoothing():
+  '''Check oversample smoothing'''
+  trace = np.vstack([ np.arange(1,100), np.arange(1,100) ]).T
+  overtrace = np.empty(trace.shape)
+  overtrace[:,0] = trace[:,0]
+  # "oversample" 8x
+  for i in xrange(0,99):
+    if i&7:
+      overtrace[i,1] = trace[i&(~7),1]
+    else:
+      overtrace[i,1] = trace[i,1]
+  # now correct it back
+  overtrace = align.correct_for_oversampling(overtrace)
+  recovered = trace[:-10]==overtrace[:-10] # the last bit isn't recovered
+  assert np.all(recovered), 'Oversample smoothing didnt recover original samples:\n'+str(np.dstack([trace[~recovered],overtrace[~recovered]]))
+
 #@attr('stats')
 #def test_alignment_checks():
 #  interval = 1000000
