@@ -4,8 +4,6 @@ import sys
 import os.path
 import numpy as np
 from StringIO import StringIO
-
-compute = reduce(os.path.join, [testdir, 'test_programs', 'compute'])
     
 def summarize_distribution(distrib):
   assert len(distrib.shape)==1, 'Bad distribution. Cant summarize.'
@@ -19,6 +17,8 @@ def check_data(data,interval):
   assert data.shape[0]!=0, 'No data'
   assert len(data.shape)==2 and data.shape[1]==2, 'Corrupted data'
   assert data.shape[0]>5, 'Insufficient data. Did the program crash?'
+  assert np.all(data[:,0]!=0), 'Corrupted data. Null ipoint.'+str(data[:,0])
+  assert (np.count_nonzero(data[:,1])-data.shape[0])<5, 'Mostly zero data. Corrupted data.'+str(data[:,1])
 
 @docstring_name
 def check_jitter(data,interval):
@@ -52,7 +52,7 @@ between them. By reading the instruction counter twice, we can get an estimate
 of that latency, measured in instructions.
 '''
   skew = data[:,1]-data[:,0]
-  assert np.all(skew>0), 'Skew is negative. The counter reads are temporally inverted.'
+  assert np.all(skew>0), 'Skew is negative.'+str(np.nonzero(skew>0)[0])
   summarize_distribution(skew)
   assert np.mean(skew)<10000, 'Excessive skew'
 
