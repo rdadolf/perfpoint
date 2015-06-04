@@ -30,10 +30,14 @@
 
       </header>
       <section>
-        <h2>
-<a id="should-i-use-perfpoint" class="anchor" href="#should-i-use-perfpoint" aria-hidden="true"><span class="octicon octicon-link"></span></a>Should I use perfpoint?</h2>
+        <p><a href="https://travis-ci.org/rdadolf/perfpoint"><img src="https://api.travis-ci.org/rdadolf/perfpoint.svg?branch=master" alt="build status"></a></p>
 
-<p>It depends. If you're just looking for a way to read hardware performance counters, probably not. Linux's perf tool already does that reasonably well. The documentation is somewhat sparse, but it likely does what you want.</p>
+<h2>
+<a id="what-is-perfpoint-and-should-i-use-it" class="anchor" href="#what-is-perfpoint-and-should-i-use-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>What is perfpoint and should I use it?</h2>
+
+<p>Perfpoint samples hardware counters at regular intervals, and it depends.</p>
+
+<p>If you're just looking for a way to read hardware performance counters, probably not. Linux's <a href="https://perf.wiki.kernel.org/index.php/Main_Page">perf</a> tool already does that reasonably well. The documentation is somewhat sparse, but it likely does what you want.</p>
 
 <p>Perfpoint solves a slightly more specific problem which perf has problems with: triggering hardware counters reads every <em>n</em> instructions. Actually, perf <em>can</em> handle this in some situations using something called counter groups. Unfortunately, counter groups suffer from some restrictions on when and how you can use them, including disallowing sampling from different PMUs. Perfpoint is effectively a manual workaround for this. It triggers interrupts using a free-running instruction counter and records another arbitrary counter on wakeup. The end result is a set of performance counter samples at regular, user-specified intervals.</p>
 
@@ -42,7 +46,7 @@
 
 <p>The primary tool is <code>perfpoint</code>, a command-line tool that lets you read a hardware counter every <em>n</em> instructions. Run it without any options to get usage. Note: you'll really need to understand some of the details of how Linux's perf interface works to use it, since specifying a harware counter requires some arcane knowledge.</p>
 
-<p>Due to hardware limitations, you can't keep track of more than a handful of counters. One solution is to assume determinism and run your program several times, recording different counters every time. Because programs <em>aren't</em> completely deterministic, we have to do some clean-up afterwards. The <code>align.py</code> script takes care of this. Again, run the program without arguments to get usage.</p>
+<p>In addition, perfpoint comes with postprocessing scripts to clean up the sample data it produces. For instance, in modern processors, you can't keep track of more than a handful of counters, and one common hack is to run your program several times and record different counters every time. Because programs aren't completely deterministic, this adds artifacts to the data. The <code>align.py</code> script attempts to clean up some of this noise. Again, run the program without arguments to get usage.</p>
       </section>
       <footer>
         <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
