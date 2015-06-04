@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Perfpoint by rdadolf</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Perfpoint</h1>
+        <p class="header">Flexible performance counter sampling</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/rdadolf/perfpoint/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/rdadolf/perfpoint/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/rdadolf/perfpoint">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/rdadolf">rdadolf</a></p>
+
+
+      </header>
+      <section>
+        <h2>
+<a id="should-i-use-perfpoint" class="anchor" href="#should-i-use-perfpoint" aria-hidden="true"><span class="octicon octicon-link"></span></a>Should I use perfpoint?</h2>
+
+<p>It depends. If you're just looking for a way to read hardware performance counters, probably not. Linux's perf tool already does that reasonably well. The documentation is somewhat sparse, but it likely does what you want.</p>
+
+<p>Perfpoint solves a slightly more specific problem which perf has problems with: triggering hardware counters reads every <em>n</em> instructions. Actually, perf <em>can</em> handle this in some situations using something called counter groups. Unfortunately, counter groups suffer from some restrictions on when and how you can use them, including disallowing sampling from different PMUs. Perfpoint is effectively a manual workaround for this. It triggers interrupts using a free-running instruction counter and records another arbitrary counter on wakeup. The end result is a set of performance counter samples at regular, user-specified intervals.</p>
+
+<h2>
+<a id="whats-included" class="anchor" href="#whats-included" aria-hidden="true"><span class="octicon octicon-link"></span></a>What's included?</h2>
+
+<p>The primary tool is <code>perfpoint</code>, a command-line tool that lets you read a hardware counter every <em>n</em> instructions. Run it without any options to get usage. Note: you'll really need to understand some of the details of how Linux's perf interface works to use it, since specifying a harware counter requires some arcane knowledge.</p>
+
+<p>Due to hardware limitations, you can't keep track of more than a handful of counters. One solution is to assume determinism and run your program several times, recording different counters every time. Because programs <em>aren't</em> completely deterministic, we have to do some clean-up afterwards. The <code>align.py</code> script takes care of this. Again, run the program without arguments to get usage.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-29492860-3");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
