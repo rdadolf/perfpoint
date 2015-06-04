@@ -38,8 +38,8 @@ We ask perf_events to signal us every N instructions, but that wakeup has overhe
   expected = np.arange(1,data.shape[0]+1)*interval
   ipoints = data[:,0]
   drift = ipoints-expected
-  assert np.all(drift>0), 'Drift is negative. Something is probably wrong with the signaling.'
   summarize_distribution(drift)
+  assert np.all(drift>0), 'Drift is negative. Something is probably wrong with the signaling.'
   assert np.mean(drift)<100000, 'Excessive drift'
 
 @docstring_name
@@ -52,8 +52,8 @@ between them. By reading the instruction counter twice, we can get an estimate
 of that latency, measured in instructions.
 '''
   skew = data[:,1]-data[:,0]
-  assert np.all(skew>0), 'Skew is negative.'+str(np.nonzero(skew>0)[0])
   summarize_distribution(skew)
+  assert np.all(skew>0), 'Skew is negative.'+str(np.nonzero(skew>0)[0])
   assert np.mean(skew)<10000, 'Excessive skew'
 
 @attr('stats')
