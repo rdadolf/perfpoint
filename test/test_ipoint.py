@@ -53,7 +53,16 @@ of that latency, measured in instructions.
 '''
   skew = data[:,1]-data[:,0]
   summarize_distribution(skew)
-  assert np.all(skew>0), 'Skew is negative.'+str(np.nonzero(skew>0)[0])
+  # Note: it *is* apparently possible to get skew of zero. It shouldn't be, but
+  # if you run things enough, you'll get one or two in the occasional trace.
+  # There's a couple of possibilities on this: (1) there's some checks in the
+  # kernel code along the read() path which can return early (before updating
+  # the counter), and it's possible one of them is getting triggered. (2) It's
+  # possible that there's a problem with the signal handler. It really *isn't*
+  # reentrant, so it's possible that it's being interrupted, but there are no
+  # other signs of this. Anyways, we only check for negative values here, which
+  # imply something else is horribly wrong.
+  assert np.all(skew>=0), 'Skew is negative'
   assert np.mean(skew)<10000, 'Excessive skew'
 
 @attr('stats')
