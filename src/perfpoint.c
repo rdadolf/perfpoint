@@ -275,20 +275,20 @@ static void sig_handler(int signum, siginfo_t *info, void *unused) {
   //   (1) we don't get another signal (lol)
   //   (2) the ipoint interval isn't too short (< ~10K and we start losing events)
   int status;
-  uint64_t v;
+  uint64_t v1=0, v2=0;
   // grab ipoint
-  status = syscall(SYS_read, ipoints.fd, &v, sizeof(uint64_t));
+  status = syscall(SYS_read, ipoints.fd, &v1, sizeof(uint64_t));
   if( status<0 ) {
     MEMLOG_ERROR();
   }
-  ipoints.ipoints[ipoints.n & SZ_MASK] = v;
+  ipoints.ipoints[ipoints.n & SZ_MASK] = v1;
   ipoints.n = ipoints.n+1;
   // grab sample
-  status = syscall(SYS_read, samples.fd, &v, sizeof(uint64_t));
+  status = syscall(SYS_read, samples.fd, &v2, sizeof(uint64_t));
   if( status<0 ) {
     MEMLOG_ERROR();
   }
-  samples.samples[samples.n & SZ_MASK] = v;
+  samples.samples[samples.n & SZ_MASK] = v2;
   samples.n = samples.n+1;
 }
 
