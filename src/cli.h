@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <inttypes.h>
 #include <string.h>
-#include <linux/perf_event.h>
+#include <unistd.h>
+#include <getopt.h>
 
 struct cli_args_t {
   // user counter

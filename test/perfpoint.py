@@ -60,9 +60,12 @@ class PerfPoint:
     assert ipoint>=10000 and ipoint<=(1<<44), 'Invalid ipoint interval passed to perfpoint'
     assert type(self._args['argv']) is list, 'Perfpoint program-under-test must be specified as a list'
     self._cmd = [perfpoint]
-    self._cmd.extend( map(lambda k: self._args[k], ['event_type', 'event_config', 'event_name','ipoint_interval']) )
-    self._cmd.append(self._args['logfile'])
-    self._cmd.append('-')
+    self._cmd.append('--event-type='+str(self._args['event_type']))
+    self._cmd.append('--event-config='+str(self._args['event_config']))
+    self._cmd.append('--event-name='+str(self._args['event_name']))
+    self._cmd.append('--interval='+str(self._args['ipoint_interval']))
+    self._cmd.append('--logfile='+str(self._args['logfile']))
+    self._cmd.append('--')
     self._cmd.extend(self._args['argv'])
     return self._cmd
 

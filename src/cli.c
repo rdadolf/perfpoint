@@ -1,63 +1,86 @@
 #include "cli.h"
 
-// FIXME: Move from positional to flags
+const struct option long_options[] = {
+  {.name="help", .has_arg=no_argument, .flag=NULL, .val='h'},
+  {.name="event-type", .has_arg=required_argument, .flag=NULL, .val='t'},
+  {.name="event-config", .has_arg=required_argument, .flag=NULL, .val='c'},
+  {.name="event-name", .has_arg=required_argument, .flag=NULL, .val='n'},
+  {.name="logfile", .has_arg=required_argument, .flag=NULL, .val='f'},
+  {.name="interval", .has_arg=required_argument, .flag=NULL, .val='i'},
+  {0,0,0,0}
+};
+const char *short_options = "ht:c:n:f:i:";
 
 // Number of position arguments before program & args, not including "-"
 void usage(const char *optional_msg){
+  const struct option *o;
   if( optional_msg!=NULL )
     printf("%s\n", optional_msg);
-  printf("Usage: perfpoint <event-class> <event-config> <event-name> <ipoint-interval> [logfile] - <program> [arg1] ...\n");
-  //printf("  Valid event types: hardware: %d, raw: %d, power: %d\n", PERF_TYPE_HARDWARE, PERF_TYPE_RAW, PERF_TYPE_POWER); // FIXME: there are many of these 
+  printf("Usage: perfpoint <flags> -- <program> [arg1] ...\n");
+  for( o=&long_options[0]; !(o->name==0&&o->has_arg==0&&o->flag==0&&o->val==0); o++ ) {
+    printf("\t-%c --%s%s\n", o->val, o->name, (o->has_arg!=no_argument) ? "=<value>":"");
+  }
 }
 
 struct cli_args_t parse_command_line(int argc, char **argv) {
   struct cli_args_t args;
-  int i, n_args, cmd_start;
-  int POS_ARGS=4;
+  int opt;
 
-  // FIXME: strtol error handling
-  if( argc<1+POS_ARGS+1+1 ) {
-    usage("Not enough arguments");
-    exit(-1);
+  memset(&args, 0, sizeof(struct cli_args_t));
+
+  // Defaults
+  args.logfile = "perfpoint.log";
+  args.ipoint_interval = 1000000;
+  args.type = 4;
+  args.config = 0x00c0;
+  args.name = "INSTRUCTION_RETIRED";
+
+  while(1) {
+    int idx, i;
+
+    opt = getopt_long(argc, argv, short_options, long_options, &idx);
+
+    switch(opt) {
+      case 't':
+        args.type = strtol(optarg, NULL, 10);
+        //printf("Set type %u\n", args.type);
+        break;
+      case 'c':
+        args.config = strtol(optarg, NULL, 16);
+        //printf("Set config %lu\n", args.config);
+        break;
+      case 'n':
+        args.name = strdup(optarg);
+        //printf("Set name %s\n", args.name);
+        break;
+      case 'i':
+        args.ipoint_interval = strtol(optarg, NULL, 10);
+        //printf("Set interval %lu\n", args.ipoint_interval);
+        break;
+      case 'f':
+        args.logfile = strdup(optarg);
+        //printf("Set logfile %s\n", args.logfile);
+        break;
+      case 'h':
+        usage(NULL);
+        exit(0);
+      case -1:
+        if( optind==argc ) {
+          usage("No user program specified");
+          exit(-1);
+        }
+        args.argc = 0;
+        args.argv = (char **)malloc((argc-optind+1)*sizeof(char*));
+        for( i=0; optind<argc; i++,optind++ ) {
+          args.argv[args.argc] = strdup(argv[optind]);
+          args.argc++;
+        }
+        args.argv[args.argc] = NULL;
+        return args;
+      default:
+        usage(NULL);
+        exit(-1);
+    }
   }
-
-  // FIXME: Actual values is in /sys/bus/event_source/devices/power/type
-  args.type = strtol(argv[1], NULL, 10);
-  args.config = strtol(argv[2], NULL, 16);
-  args.name = strdup(argv[3]);
-  args.ipoint_interval = strtol(argv[4], NULL, 10);
-  if( args.ipoint_interval<10000 || args.ipoint_interval>(1LU<<44) ) {
-    usage("Extreme ipoint interval");
-    exit(-1);
-  }
-
-  if( strncmp(argv[POS_ARGS+1],"-",2) ) { // Has logfile argument?
-    args.logfile = argv[POS_ARGS+1];
-    POS_ARGS++;
-  } else {
-    args.logfile = "perfpoint.log";
-  }
-
-  n_args = argc-POS_ARGS-1-1;
-  cmd_start = POS_ARGS+1+1;
-  if( n_args<=0 ) {
-    usage("Missing child process");
-    exit(-1);
-  }
-  args.argc = n_args;
-  args.argv = (char **)malloc((1+n_args)*sizeof(char *));
-  // We add 1 extra slot and NULL-terminate because execv() is special like that
-  for( i=0; i<n_args; i++ )
-    args.argv[i] = strdup(argv[cmd_start+i]);
-  args.argv[n_args] = NULL;
-
-  #ifdef DEBUG
-  printf("user counter:\n  type:%d\n  config:%02lx\n", args.type, args.config);
-  printf("user program:\n");
-  for( i=0; i<args.argc; i++ )
-    printf("  %s\n", args.argv[i]);
-  #endif
-
-  return args;
+  // Nobody falls through the infinite loop
 }
-
