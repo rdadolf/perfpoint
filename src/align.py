@@ -62,9 +62,9 @@ def correct_for_oversampling(trace):
   # Note: the last repeat sequence will not be fixed. Deal with it. *shrug*
   return trace
 
-def cum2delta(cum):
+def cumul2delta(cumul):
   '''Changes cumulative counters into deltas'''
-  delta = np.copy(cum)
+  delta = np.copy(cumul)
   delta[1:,:] -= delta[:-1,:]
   return delta
 
@@ -77,11 +77,12 @@ if __name__=='__main__':
   g.add_argument('--truncated', action='store_true', default=False, help='Fix longer traces by truncating rather than scaling')
   g.add_argument('--scaled', action='store_true', default=True, help='Fix longer traces by truncating rather than scaling')
   cli.add_argument('--no-oversample-correction', action='store_true', default=False, help='Disable automatic smoothing of stairstep samples caused by oversampling. This is generally harmless, even if you dont have oversampled counters.')
+  cli.add_argument('-o','--output', default='aligned.out', help='Name of the file to save aligned traces into')
   args = cli.parse_args()
 
   assert len(args.files)>1, 'Must have more than one tracefile to align anything'
 
-  with open('aligned.out','w') as f:
+  with open(args.output,'w') as f:
     traces = load_traces(args.files)
 
     if not args.no_oversample_correction:
