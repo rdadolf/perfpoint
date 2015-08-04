@@ -35,7 +35,8 @@ def align_scaled(traces, interval_s):
     scaling_factor = last_desired_ipoint/t[-1,0]
     #print scaling_factor,type(scaling_factor)
     scaled_t = t * scaling_factor
-    assert np.abs(scaled_t[-1,0]-last_desired_ipoint)<0.0001, 'bad scaling'
+    #print np.abs(scaled_t[-1,0]-last_desired_ipoint)
+    assert np.abs(scaled_t[-1,0]-last_desired_ipoint)<1.0, 'bad scaling'
     data[:,c+1] = np.interp(data[:,0], scaled_t[:,0], scaled_t[:,1], left=0.)
   return data
 
